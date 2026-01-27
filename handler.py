@@ -7,11 +7,10 @@ import runpod
 
 # 全局模型缓存（懒加载）
 _models = {}
-_tokenizer = None
 
 def get_model(mode: str):
-    """懒加载模型，按需加载避免显存爆"""
-    global _models, _tokenizer
+    """懒加载模型"""
+    global _models
     
     if mode in _models:
         return _models[mode]
@@ -29,11 +28,14 @@ def get_model(mode: str):
         raise ValueError(f"Unknown mode: {mode}")
     
     print(f"Loading model for {mode}: {model_name}")
+    
+    # 不使用 flash_attention，用默认 attention 实现
     model = Qwen3TTSModel.from_pretrained(
         model_name,
-        device_map="cuda:0",
-        dtype=torch.bfloat16,
+        device_map="auto",
+        torch_dtype=torch.float16,
     )
+    
     _models[mode] = model
     print(f"Model loaded: {mode}")
     return model
@@ -72,7 +74,6 @@ def synthesize(job):
             ref_audio_b64 = inp["ref_audio_b64"]
             ref_text = inp["ref_text"]
             
-            # 解码 base64 音频
             ref_audio_bytes = base64.b64decode(ref_audio_b64)
             
             wavs, sr = model.generate_voice_clone(
