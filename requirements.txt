@@ -1,0 +1,7 @@
+runpod
+qwen-tts
+soundfile
+torch
+transformers
+accelerate
+huggingface_hub
