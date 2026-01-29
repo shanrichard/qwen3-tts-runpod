@@ -29,11 +29,12 @@ def get_model(mode: str):
     
     print(f"Loading model for {mode}: {model_name}")
     
-    # 不使用 flash_attention，用默认 attention 实现
+    # 使用 bfloat16，明确禁用 flash_attention
     model = Qwen3TTSModel.from_pretrained(
         model_name,
         device_map="auto",
-        torch_dtype=torch.float16,
+        torch_dtype=torch.bfloat16,
+        attn_implementation="sdpa",
     )
     
     _models[mode] = model
