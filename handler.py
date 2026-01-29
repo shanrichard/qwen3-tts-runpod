@@ -73,13 +73,17 @@ def synthesize(job):
         elif mode == "voice_clone":
             ref_audio_b64 = inp["ref_audio_b64"]
             ref_text = inp["ref_text"]
-            
+
+            # 解码 base64 并用 soundfile 加载为 numpy array
+            import soundfile as sf
             ref_audio_bytes = base64.b64decode(ref_audio_b64)
-            
+            ref_audio_buffer = io.BytesIO(ref_audio_bytes)
+            ref_audio_data, ref_sr = sf.read(ref_audio_buffer)
+
             wavs, sr = model.generate_voice_clone(
                 text=text,
                 language=language,
-                ref_audio=ref_audio_bytes,
+                ref_audio=ref_audio_data,
                 ref_text=ref_text,
             )
         
