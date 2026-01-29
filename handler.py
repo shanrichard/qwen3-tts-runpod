@@ -83,7 +83,7 @@ def synthesize(job):
             wavs, sr = model.generate_voice_clone(
                 text=text,
                 language=language,
-                ref_audio=ref_audio_data,
+                ref_audio=(ref_audio_data, ref_sr),
                 ref_text=ref_text,
             )
         
